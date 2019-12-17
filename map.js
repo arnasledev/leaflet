@@ -3,6 +3,18 @@ const aircraftlayer = L.layerGroup().addTo(mymap);
 const markeriai = L.layerGroup().addTo(mymap);
 const leafLeatAccessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
+const fixedLocation = {
+  latitude: {
+    min: 54.00,
+    max: 56.00
+  },
+  longtitude: {
+    min: 23.00,
+    max: 25.00
+  }
+};
+const ufoInTheSky = {};
+
 let currentObjectId = 1;
 let objectsInterval = null;
 
@@ -24,6 +36,11 @@ const readFile = file => {
 };
 
 const moveObjects = async () => {
+  const intToAdd = {
+    latitude: Math.random() * (0.09 - -0.05) + -0.05,
+    longtitude: Math.random() * (0.09 - -0.05) + -0.05
+  };
+
   let objectInfo;
   try {
     objectInfo = await readFile(`${currentObjectId}.txt`);
@@ -32,30 +49,50 @@ const moveObjects = async () => {
     return console.log(`Unable to read ${currentObjectId}.txt`, e.message);
   }
 
-  objectInfo = { track: objectInfo };
-  console.log(JSON.parse(objectInfo))
+  objectInfo = JSON.parse(objectInfo);
+  for (const key in objectInfo) {
+    const data = {
+      name: objectInfo[key].track_mode_3a
+    };
 
-  // const data = {
-  //   latitude:
-  // };
+    if (!ufoInTheSky[data.name]) {
+      const latitude = Math.random() * (fixedLocation.latitude.max - fixedLocation.latitude.min) + fixedLocation.latitude.min;
+      const longtitude = Math.random() * (fixedLocation.longtitude.max - fixedLocation.longtitude.min) + fixedLocation.longtitude.min;
+
+      ufoInTheSky[data.name] = { marker: null, latitude, longtitude };
+    } else {
+      ufoInTheSky[data.name].latitude = ufoInTheSky[data.name].latitude + intToAdd.latitude;
+      ufoInTheSky[data.name].longtitude = ufoInTheSky[data.name].longtitude + intToAdd.longtitude;
+    }
+
+    if (ufoInTheSky[data.name].marker){
+      mymap.removeLayer(ufoInTheSky[data.name].marker)
+    }
+
+    if (ufoInTheSky[data.name].latitude && ufoInTheSky[data.name].longtitude) {
+      ufoInTheSky[data.name].marker = L.circleMarker(
+        [ufoInTheSky[data.name].latitude, ufoInTheSky[data.name].longtitude],
+        {
+          color: 'black',
+          opacity: 0.5,
+          radius: 5
+        }
+      ).addTo(aircraftlayer);
+    }
+  }
 
   if (currentObjectId < 20) {
     currentObjectId++;
-    // return setTimeout(moveObjects, 10000);
+    return setTimeout(moveObjects, 2500);
   }
 };
 
 init();
 moveObjects();
 
-// L.marker(
-//   [55, 24],
-//   {
-//     rotationAngle: 45,
-//     opacity: 1,
-//     color: 'red'
-//   }
-// ).addTo(markeriai);
+var marker = L.marker([55, 24], { rotationAngle: 45, opacity: 1, color: 'red' }).addTo(markeriai);
+marker.bindTooltip('Test',
+  { opacity: 0.5, permanent: true, className: 'my-label', offset: [0, 0] });
 
 function drawMarkers() {
   var jsonOb = JSON.parse(request.responseText);
