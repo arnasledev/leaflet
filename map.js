@@ -49,6 +49,7 @@ const moveObjects = async () => {
     return console.log(`Unable to read ${currentObjectId}.txt`, e.message);
   }
 
+  // todo transform parsed info to use as it states and not random generated one
   objectInfo = JSON.parse(objectInfo);
   for (const key in objectInfo) {
     const data = {
@@ -65,8 +66,8 @@ const moveObjects = async () => {
       ufoInTheSky[data.name].longtitude = ufoInTheSky[data.name].longtitude + intToAdd.longtitude;
     }
 
-    if (ufoInTheSky[data.name].marker){
-      mymap.removeLayer(ufoInTheSky[data.name].marker)
+    if (ufoInTheSky[data.name].marker) {
+      mymap.removeLayer(ufoInTheSky[data.name].marker);
     }
 
     if (ufoInTheSky[data.name].latitude && ufoInTheSky[data.name].longtitude) {
@@ -78,6 +79,24 @@ const moveObjects = async () => {
           radius: 5
         }
       ).addTo(aircraftlayer);
+
+      let template = `<div style="text-align: left; font-size: xx-small;">`;
+      template += `Stuff: lorem<br />`;
+      template += `Stuff2: ipsum<br />`;
+      template += `Stuff3: dolar<br />`;
+      template += `Stuff4: sit<br />`;
+      template += `Stuff5: amet<br />`;
+      template += `</div>`;
+
+      ufoInTheSky[data.name].marker.bindPopup(
+        template,
+        {
+          opacity: 0.5,
+          permanent: true,
+          className: 'my-label',
+          offset: [0, 0]
+        }
+      );
     }
   }
 
@@ -89,45 +108,3 @@ const moveObjects = async () => {
 
 init();
 moveObjects();
-
-var marker = L.marker([55, 24], { rotationAngle: 45, opacity: 1, color: 'red' }).addTo(markeriai);
-marker.bindTooltip('Test',
-  { opacity: 0.5, permanent: true, className: 'my-label', offset: [0, 0] });
-
-function drawMarkers() {
-  var jsonOb = JSON.parse(request.responseText);
-  aircraftlayer.clearLayers();
-  for (var key in jsonOb) {
-
-    var element = jsonOb[key];
-    if (element.constructor === Array) {
-      var lat = element[1];
-      var lon = element[2];
-      var crs = element[3];
-      var alt = element[4];
-      var gs = element[5];  // ground speed
-      var vs = element[15]; // vertical speed
-      var squawk = element[6];
-      var code = element[18]; // ICAO code
-      var fpl = element[13]; // flight plan no.
-      var ong = element[14]; // on ground
-      var y = element[17]; // ?
-      if (lat != undefined && lon != undefined && crs != undefined) {
-        var marker = L.circleMarker([lat, lon], { color: 'black', opacity: 0.5, radius: 5 }).addTo(
-          aircraftlayer);
-        marker.bindPopup('<div style="text-align: left; font-size: xx-small;">' +   // .bindTooltip
-          'Crs: ' + String(crs) + '&deg;<br>' +
-          'Alt: ' + alt + ' ft<br>' +
-          'GS: ' + gs + ' kt<br>' +
-          'VS: ' + vs + ' fpm<br>' +
-          'Squawk: ' + squawk + '<br>' +
-          'Code: ' + code + '<br>' +
-          'FPL: ' + fpl + '<br>' +
-          'On ground: ' + ong + '<br>' +
-          'y: ' + y +
-          '</div>', { opacity: 0.5, permanent: true, className: 'my-label', offset: [0, 0] });
-      }
-    }
-
-  }
-}
