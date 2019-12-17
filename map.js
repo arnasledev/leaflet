@@ -18,7 +18,9 @@ const init = () => {
 };
 
 const readFile = file => {
-
+  return $.get(`https://raw.githubusercontent.com/arnasledev/leaflet/master/data/${file}`, data => {
+    return data;
+  });
 };
 
 const moveObjects = async () => {
@@ -30,23 +32,30 @@ const moveObjects = async () => {
     return console.log(`Unable to read ${currentObjectId}.txt`, e.message);
   }
 
-  console.log(objectInfo);
+  objectInfo = { track: objectInfo };
+  console.log(JSON.parse(objectInfo))
 
-  currentObjectId++;
-  return true;
+  // const data = {
+  //   latitude:
+  // };
+
+  if (currentObjectId < 20) {
+    currentObjectId++;
+    // return setTimeout(moveObjects, 10000);
+  }
 };
 
 init();
-L.marker(
-  [55, 24],
-  {
-    rotationAngle: 45,
-    opacity: 1,
-    color: 'red'
-  }
-).addTo(markeriai);
+moveObjects();
 
-//objectsInterval = setInterval(moveObjects, 1000);
+// L.marker(
+//   [55, 24],
+//   {
+//     rotationAngle: 45,
+//     opacity: 1,
+//     color: 'red'
+//   }
+// ).addTo(markeriai);
 
 function drawMarkers() {
   var jsonOb = JSON.parse(request.responseText);
@@ -85,5 +94,3 @@ function drawMarkers() {
 
   }
 }
-
-$.get('https://raw.githubusercontent.com/arnasledev/battle-log/master/.babelrc', data => console.log(data));
