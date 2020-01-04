@@ -1,5 +1,5 @@
 // leaflet map object with lithuania coordination
-const mymap = L.map('mapid').setView([55.1, 23.0], 7.4)
+const mymap = L.map('mapid').setView([40.4637, -2.7492], 6.35)
 // layer that must be included to the map object in order to update data on it
 const aircraftlayer = L.layerGroup().addTo(mymap)
 // leaflet library access token to manipulate given data
@@ -8,12 +8,12 @@ const leafLeatAccessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBn
 // information where all planes should be dropped (start position)
 const fixedLocation = {
     latitude: {
-        min: 54.00,
-        max: 56.00
+        min: 39.00,
+        max: 42.00
     },
     longtitude: {
-        min: 23.00,
-        max: 25.00
+        min: -4.00,
+        max: 0.00
     }
 }
 
